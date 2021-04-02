@@ -13,20 +13,30 @@ class ofApp : public ofBaseApp {
 		void setup();
 		void update();
 		void draw();
-
-		void keyPressed(int key);
-		void keyReleased(int key);
-		void mouseMoved(int x, int y );
-		void mouseDragged(int x, int y, int button);
-		void mousePressed(int x, int y, int button);
-		void mouseReleased(int x, int y, int button);
-		void mouseEntered(int x, int y);
-		void mouseExited(int x, int y);
-		void windowResized(int w, int h);
-		void dragEvent(ofDragInfo dragInfo);
-		void gotMessage(ofMessage msg);
-		
+	
 		ofxSpout::Receiver receiver;
 		ofTexture texture;
+
+		ofxHTTP::SimpleWebSocketServer wsServer;
+		ofxHTTP::SimpleWebSocketServerSettings wsSettings;
+		int wsPort;
+		int width = 640;
+		int height = 480;
+		int videoQuality; // 5 best to 1 worst, default 3 medium
+		string uniqueId = "test";
+		ofFile file;
+		ofBuffer videoBuffer;
+		int timestamp;
+		ofFbo fbo;
+		ofPixels pixels;
+
+		void onWebSocketOpenEvent(ofxHTTP::WebSocketEventArgs& evt);
+		void onWebSocketCloseEvent(ofxHTTP::WebSocketCloseEventArgs& evt);
+		void onWebSocketFrameReceivedEvent(ofxHTTP::WebSocketFrameEventArgs& evt);
+		void onWebSocketFrameSentEvent(ofxHTTP::WebSocketFrameEventArgs& evt);
+		void onWebSocketErrorEvent(ofxHTTP::WebSocketErrorEventArgs& evt);
+		
+		void sendWsVideo();
+		void generateUniqueId();
 
 };
