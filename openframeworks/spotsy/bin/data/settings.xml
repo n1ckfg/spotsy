@@ -4,11 +4,11 @@
     <height>480</height>
     <video_quality>3</video_quality>
     <host>verticalstudio.glitch.me</host>
-    <port>80</port>
+    <port>443</port>
     <ssl>1</ssl>
     <channel>/</channel>
     <protocol>NULL</protocol>
-    <version>-1</version>
+    <version>2</version>
     <reconnect>false</reconnect>
     <reconnectInterval>1000</reconnectInterval>
     <ka_time>0</ka_time>
