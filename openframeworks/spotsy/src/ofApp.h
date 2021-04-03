@@ -1,11 +1,11 @@
 #pragma once
 
 #include "ofMain.h"
-#include "ofxSpout.h"
+#include "ofxXmlPoco.h"
 #include "ofxXmlSettings.h"
-#include "ofxHTTP.h"
-#include "ofxJSONElement.h"
+#include "ofxSpout.h"
 #include "ofxCrypto.h"
+#include "ofxLibwebsockets.h"
 
 class ofApp : public ofBaseApp {
 
@@ -14,12 +14,22 @@ class ofApp : public ofBaseApp {
 		void update();
 		void draw();
 	
-		ofxSpout::Receiver receiver;
-		ofTexture texture;
+		// websocket methods
+		void onConnect(ofxLibwebsockets::Event& args);
+		void onOpen(ofxLibwebsockets::Event& args);
+		void onClose(ofxLibwebsockets::Event& args);
+		void onIdle(ofxLibwebsockets::Event& args);
+		void onMessage(ofxLibwebsockets::Event& args);
+		void onBroadcast(ofxLibwebsockets::Event& args);
 
-		ofxHTTP::SimpleWebSocketServer wsServer;
-		ofxHTTP::SimpleWebSocketServerSettings wsSettings;
-		int wsPort;
+		void sendWsVideo();
+		void generateUniqueId();
+
+		ofxSpout::Receiver receiver;
+		ofxLibwebsockets::Client client;
+
+		ofTexture texture;
+		string wsUrl = "verticalstudio.glitch.me";
 		int width = 640;
 		int height = 480;
 		int videoQuality; // 5 best to 1 worst, default 3 medium
@@ -29,14 +39,7 @@ class ofApp : public ofBaseApp {
 		int timestamp;
 		ofFbo fbo;
 		ofPixels pixels;
+	
 
-		void onWebSocketOpenEvent(ofxHTTP::WebSocketEventArgs& evt);
-		void onWebSocketCloseEvent(ofxHTTP::WebSocketCloseEventArgs& evt);
-		void onWebSocketFrameReceivedEvent(ofxHTTP::WebSocketFrameEventArgs& evt);
-		void onWebSocketFrameSentEvent(ofxHTTP::WebSocketFrameEventArgs& evt);
-		void onWebSocketErrorEvent(ofxHTTP::WebSocketErrorEventArgs& evt);
-		
-		void sendWsVideo();
-		void generateUniqueId();
 
 };

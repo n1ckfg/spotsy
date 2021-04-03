@@ -1,10 +1,5 @@
 ofxCrypto
+ofxLibwebsockets
 ofxPoco
-ofxSSLManager
-ofxIO
-ofxMediaType
-ofxNetworkUtils
-ofxHTTP
-ofxJSON
 ofxSpout
 ofxXmlSettings
