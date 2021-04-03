@@ -16,25 +16,20 @@ void ofApp::setup() {
     receiverDir.setup();
     ofAddListener(receiverDir.events.serverAnnounced, this, &ofApp::serverAnnounced);
 
-	clientOptions = ofxLibwebsockets::defaultClientOptions();
+    isConnected = false;
+    address = settings.getValue("settings:host", "http://echo.websocket.org");
+    status = "not connected";
 
-	clientOptions.host = settings.getValue("settings:host", "echo.websocket.org");
-	clientOptions.port = settings.getValue("settings:port", 80);
-	clientOptions.bUseSSL = (bool) settings.getValue("settings:ssl", 0);
-	clientOptions.channel = settings.getValue("settings:channel", "/");
-	clientOptions.protocol = settings.getValue("settings:protocol", "NULL");
-	clientOptions.version = settings.getValue("settings:version", -1); // -1 to use latest
-	clientOptions.reconnect = (bool) settings.getValue("settings:reconnect", 0); // docs warn this can crash
-	clientOptions.reconnectInterval = settings.getValue("settings:reconnectInterval", 1000);
-	clientOptions.ka_time = settings.getValue("settings:ka_time", 0);
-	clientOptions.ka_probes = settings.getValue("settings:ka_probes", 0);
-	clientOptions.ka_interval = settings.getValue("settings:ka_interval", 0);
+    socketIO.setup(address);
+    /*
+     * You can also pass a query parameter at connection if needed.
+     */
+    // std::map<std::string,std::string> query;
+    // query["token"] = "hello";
+    // socketIO.setup(address, query);
 
-	ofSetLogLevel(OF_LOG_VERBOSE);
-	client.connect(clientOptions);
-	ofSetLogLevel(OF_LOG_ERROR);
-
-	client.addListener(this);
+    ofAddListener(socketIO.notifyEvent, this, &ofApp::gotEvent);
+    ofAddListener(socketIO.connectionEvent, this, &ofApp::onConnection);
 }
 
 void ofApp::serverAnnounced(ofxSyphonServerDirectoryEventArgs &arg) {
@@ -83,12 +78,12 @@ void ofApp::draw() {
 	fbo.draw(0, 0);
     //ofDrawBitmapString("Spout: " + receiver.getChannelName(), 20, 20);
     ofDrawBitmapString("Syphon: " + receiver.getServerName(), 20, 20);
-	ofDrawBitmapString(client.isConnected() ? "ws client connected :)" : "ws client disconnected :(", 10, 50);
+	//ofDrawBitmapString(client.isConnected() ? "ws client connected :)" : "ws client disconnected :(", 10, 50);
 }
 
 void ofApp::sendWsVideo() {
 	string msg = "{\"unique_id\":\"" + uniqueId + "\",\"video\":\"" + ofxCrypto::base64_encode(videoBuffer) + "\",\"timestamp\":\"" + ofToString(timestamp) + "\"}";
-	client.send(msg);
+	//client.send(msg);
 }
 
 void ofApp::generateUniqueId() {
@@ -108,31 +103,69 @@ void ofApp::generateUniqueId() {
 	}
 }
 
-void ofApp::onConnect(ofxLibwebsockets::Event& args) {
-	cout << "on connected" << endl;
+void ofApp::onConnection () {
+  isConnected = true;
+  bindEvents();
 }
 
-//--------------------------------------------------------------
-void ofApp::onOpen(ofxLibwebsockets::Event& args) {
-	cout << "on open" << endl;
+void ofApp::bindEvents () {
+  std::string serverEventName = "server-event";
+  socketIO.bindEvent(serverEvent, serverEventName);
+  ofAddListener(serverEvent, this, &ofApp::onServerEvent);
+
+  std::string pingEventName = "pingy";
+  socketIO.bindEvent(pingEvent, pingEventName);
+  ofAddListener(pingEvent, this, &ofApp::onPingEvent);
+
+  std::string nspingEventName = "nsping";
+  socketIO.bindEvent(nspingEvent, nspingEventName, "nsp");
+  ofAddListener(nspingEvent, this, &ofApp::onNSPingEvent);
+
+  std::string arrayEventName = "array-event";
+  socketIO.bindEvent(arrayEvent, arrayEventName);
+  ofAddListener(arrayEvent, this, &ofApp::onArrayEvent);
 }
 
-//--------------------------------------------------------------
-void ofApp::onClose(ofxLibwebsockets::Event& args) {
-	cout << "on close" << endl;
+void ofApp::gotEvent(string& name) {
+  status = name;
 }
 
-//--------------------------------------------------------------
-void ofApp::onIdle(ofxLibwebsockets::Event& args) {
-	cout << "on idle" << endl;
+void ofApp::onServerEvent (ofxSocketIOData& data) {
+  ofLogNotice("ofxSocketIO", data.getStringValue("stringData"));
+  ofLogNotice("ofxSocketIO", ofToString(data.getIntValue("intData")));
+  ofLogNotice("ofxSocketIO", ofToString(data.getFloatValue("floatData")));
+  ofLogNotice("ofxSocketIO", ofToString(data.getBoolValue("boolData")));
+
+  ofxSocketIOData nested = data.getNestedValue("nested");
+  ofLogNotice("ofxSocketIO", ofToString(nested.getStringValue("hello")));
 }
 
-//--------------------------------------------------------------
-void ofApp::onMessage(ofxLibwebsockets::Event& args) {
-	cout << "got message " << args.message << endl;
+void ofApp::onArrayEvent (ofxSocketIOData& data) {
+    for (auto line : data.getVector()) {
+        ofLogNotice("ofxSocketIO", line->get_string());
+    }
+
+  std::string who = "tina";
+  std::string you = "[ \"you're simply the best\", \"better than all the rest\", \"better than anyone\", \"anyone I ever met\" ]";
+
+  socketIO.emit(who, you);
 }
 
-//--------------------------------------------------------------
-void ofApp::onBroadcast(ofxLibwebsockets::Event& args) {
-	cout << "got broadcast " << args.message << endl;
+void ofApp::onPingEvent (ofxSocketIOData& data) {
+  ofLogNotice("ofxSocketIO", "pingy");
+  std::string pong = "pongy";
+  std::string param = "foo";
+  socketIO.emit(pong, param);
+  /*
+   * You can also emit without param
+   */
+  // socketIO.emit(pong);
+}
+
+void ofApp::onNSPingEvent (ofxSocketIOData& data) {
+  ofLogNotice("ofxSocketIO", "nsping");
+  std::string pong = "nspong";
+  std::string param = "foo";
+  std::string nsp = "nsp";
+  socketIO.emit(pong, param, nsp);
 }

@@ -6,7 +6,9 @@
 //#include "ofxSpout.h"
 #include "ofxSyphon.h"
 #include "ofxCrypto.h"
-#include "ofxLibwebsockets.h"
+#include "ofEvents.h"
+#include "ofxSocketIO.h"
+#include "ofxSocketIOData.h"
 
 class ofApp : public ofBaseApp {
 
@@ -15,14 +17,6 @@ class ofApp : public ofBaseApp {
 		void update();
 		void draw();
 	
-		// websocket methods
-		void onConnect(ofxLibwebsockets::Event& args);
-		void onOpen(ofxLibwebsockets::Event& args);
-		void onClose(ofxLibwebsockets::Event& args);
-		void onIdle(ofxLibwebsockets::Event& args);
-		void onMessage(ofxLibwebsockets::Event& args);
-		void onBroadcast(ofxLibwebsockets::Event& args);
-
 		void sendWsVideo();
 		void generateUniqueId();
 
@@ -31,10 +25,23 @@ class ofApp : public ofBaseApp {
         ofxSyphonServerDirectory receiverDir;
         void serverAnnounced(ofxSyphonServerDirectoryEventArgs &arg);
 
-        ofxLibwebsockets::Client client;
-		ofxLibwebsockets::ClientOptions clientOptions;
-
-		ofTexture texture;
+        ofxSocketIO socketIO;
+        bool isConnected;
+        void onConnection();
+        void bindEvents();
+        string address;
+        string status;
+        void gotEvent(std::string& name);
+        ofEvent<ofxSocketIOData&> serverEvent;
+        void onServerEvent(ofxSocketIOData& data);
+        ofEvent<ofxSocketIOData&> pingEvent;
+        void onPingEvent(ofxSocketIOData& data);
+        ofEvent<ofxSocketIOData&> nspingEvent;
+        void onNSPingEvent(ofxSocketIOData& data);
+        ofEvent<ofxSocketIOData&> arrayEvent;
+        void onArrayEvent(ofxSocketIOData& data);
+    
+        ofTexture texture;
 		int width = 640;
 		int height = 480;
 		int videoQuality; // 5 best to 1 worst, default 3 medium
