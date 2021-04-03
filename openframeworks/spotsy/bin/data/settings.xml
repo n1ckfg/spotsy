@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<settings>
+    <width>640</width>
+    <height>480</height>
+    <video_quality>3</video_quality>
+    <host>echo.websocket.org</host>
+    <port>80</port>
+    <ssl>0</ssl>
+    <channel>/</channel>
+    <protocol>NULL</protocol>
+    <version>-1</version>
+    <reconnect>false</reconnect>
+    <reconnectInterval>1000</reconnectInterval>
+    <ka_time>0</ka_time>
+    <ka_probes>0</ka_probes>
+    <ka_interval>0</ka_interval>
+</settings>

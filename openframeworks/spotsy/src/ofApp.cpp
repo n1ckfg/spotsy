@@ -1,15 +1,35 @@
 #include "ofApp.h"
 
 void ofApp::setup() {
+	settings.loadFile("settings.xml");
+	width = settings.getValue("settings:width", 640);
+	height = settings.getValue("settings:height", 480);
+	videoQuality = settings.getValue("settings:video_quality", 3);
+
 	ofSetWindowShape(width, height);
 	generateUniqueId();
 	fbo.allocate(width, height, GL_RGBA);
 	pixels.allocate(width, height, OF_IMAGE_COLOR);
 
 	receiver.init();
+	clientOptions = ofxLibwebsockets::defaultClientOptions();
 
-	wsUrl = "https://" + wsUrl + "/socket.io/";
-	client.connect(wsUrl, 80);
+	clientOptions.host = settings.getValue("settings:host", "echo.websocket.org");
+	clientOptions.port = settings.getValue("settings:port", 80);
+	clientOptions.bUseSSL = (bool) settings.getValue("settings:bUseSSL", 0);
+	clientOptions.channel = settings.getValue("settings:channel", "/");
+	clientOptions.protocol = settings.getValue("settings:protocol", "NULL");
+	clientOptions.version = settings.getValue("settings:version", -1); // -1 to use latest
+	clientOptions.reconnect = (bool) settings.getValue("settings:reconnect", 0); // docs warn this can crash
+	clientOptions.reconnectInterval = settings.getValue("settings:reconnectInterval", 1000);
+	clientOptions.ka_time = settings.getValue("settings:ka_time", 0);
+	clientOptions.ka_probes = settings.getValue("settings:ka_probes", 0);
+	clientOptions.ka_interval = settings.getValue("settings:ka_interval", 0);
+
+	ofSetLogLevel(OF_LOG_VERBOSE);
+	client.connect(clientOptions);
+	ofSetLogLevel(OF_LOG_ERROR);
+
 	client.addListener(this);
 }
 
@@ -41,7 +61,7 @@ void ofApp::update() {
 			break;
 		}
 
-		sendWsVideo();
+		//sendWsVideo();
 	}
 }
 
@@ -74,26 +94,30 @@ void ofApp::generateUniqueId() {
 }
 
 void ofApp::onConnect(ofxLibwebsockets::Event& args) {
-	ofLogVerbose() << "on connect";
+	cout << "on connected" << endl;
 }
 
 //--------------------------------------------------------------
 void ofApp::onOpen(ofxLibwebsockets::Event& args) {
-	ofLogVerbose() << "on open";
+	cout << "on open" << endl;
 }
 
+//--------------------------------------------------------------
 void ofApp::onClose(ofxLibwebsockets::Event& args) {
-	ofLogVerbose() << "on close";
+	cout << "on close" << endl;
 }
 
+//--------------------------------------------------------------
 void ofApp::onIdle(ofxLibwebsockets::Event& args) {
-	ofLogVerbose() << "on idle";
+	cout << "on idle" << endl;
 }
 
+//--------------------------------------------------------------
 void ofApp::onMessage(ofxLibwebsockets::Event& args) {
 	cout << "got message " << args.message << endl;
 }
 
+//--------------------------------------------------------------
 void ofApp::onBroadcast(ofxLibwebsockets::Event& args) {
 	cout << "got broadcast " << args.message << endl;
 }

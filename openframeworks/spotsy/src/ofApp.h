@@ -27,14 +27,15 @@ class ofApp : public ofBaseApp {
 
 		ofxSpout::Receiver receiver;
 		ofxLibwebsockets::Client client;
+		ofxLibwebsockets::ClientOptions clientOptions;
 
 		ofTexture texture;
-		string wsUrl = "verticalstudio.glitch.me";
 		int width = 640;
 		int height = 480;
 		int videoQuality; // 5 best to 1 worst, default 3 medium
 		string uniqueId = "test";
 		ofFile file;
+		ofxXmlSettings settings;
 		ofBuffer videoBuffer;
 		int timestamp;
 		ofFbo fbo;
