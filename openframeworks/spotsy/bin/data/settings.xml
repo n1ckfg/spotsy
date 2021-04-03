@@ -2,6 +2,7 @@
 <settings>
     <width>640</width>
     <height>480</height>
+    <frame_rate>30</frame_rate>
     <video_quality>3</video_quality>
     <host>https://verticalstudio.glitch.me:80</host>
 </settings>

@@ -3,24 +3,26 @@
 void ofApp::setup() {
 	settings.loadFile("settings.xml");
 	width = settings.getValue("settings:width", 640);
-	height = settings.getValue("settings:height", 480);
+    height = settings.getValue("settings:height", 480);
+    fps = settings.getValue("settings:frame_rate", 60);
 	videoQuality = settings.getValue("settings:video_quality", 3);
 
 	ofSetWindowShape(width, height);
+    ofSetFrameRate(fps);
 	generateUniqueId();
 	fbo.allocate(width, height, GL_RGBA);
 	pixels.allocate(width, height, OF_IMAGE_COLOR);
-
+    
+    // SPOUT
 	//receiver.init();
+    // SYPHON
     receiver.setup();
     receiverDir.setup();
     ofAddListener(receiverDir.events.serverAnnounced, this, &ofApp::serverAnnounced);
 
     isConnected = false;
-    address = settings.getValue("settings:host", "http://echo.websocket.org");
-    status = "not connected";
-
-    socketIO.setup(address);
+    host = settings.getValue("settings:host", "http://echo.websocket.org");
+    socketIO.setup(host);
     /*
      * You can also pass a query parameter at connection if needed.
      */
@@ -32,6 +34,7 @@ void ofApp::setup() {
     ofAddListener(socketIO.connectionEvent, this, &ofApp::onConnection);
 }
 
+// SYPHON
 void ofApp::serverAnnounced(ofxSyphonServerDirectoryEventArgs &arg) {
     for(auto& dir : arg.servers) {
         ofLogNotice("ofxSyphonServerDirectory Server Announced")<<" Server Name: "<<dir.serverName <<" | App Name: "<<dir.appName;
@@ -43,12 +46,18 @@ void ofApp::serverAnnounced(ofxSyphonServerDirectoryEventArgs &arg) {
 void ofApp::update() {
 	timestamp = (int) ofGetSystemTimeMillis();
 	
+    // SPOUT
     //receiver.receive(texture);
-	
     //if (texture.isAllocated()) {
+    // SYPHON
     if (receiverDir.isValidIndex(0)) {
 		fbo.begin();
-		receiver.draw(0, 0, width, height);
+        
+        // SPOUT
+        //texture.draw(0, 0, width, height);
+        // SYPHON
+        receiver.draw(0, 0, width, height);
+        
         fbo.end();
 		fbo.readToPixels(pixels);
 
@@ -70,20 +79,28 @@ void ofApp::update() {
 			break;
 		}
 
-		//sendWsVideo();
+		sendWsVideo();
 	}
 }
 
 void ofApp::draw() {
 	fbo.draw(0, 0);
-    //ofDrawBitmapString("Spout: " + receiver.getChannelName(), 20, 20);
-    ofDrawBitmapString("Syphon: " + receiver.getServerName(), 20, 20);
-	//ofDrawBitmapString(client.isConnected() ? "ws client connected :)" : "ws client disconnected :(", 10, 50);
+    
+    // SPOUT
+    //ofDrawBitmapStringHighlight("Spout: " + receiver.getChannelName(), 20, 20);
+    // SYPHON
+    ofDrawBitmapStringHighlight("Syphon: " + receiver.getServerName(), 20, 20);
+    
+    ofDrawBitmapStringHighlight(isConnected ? "ws client connected :)" : "ws client disconnected :(", 20, 50);
+    ofDrawBitmapStringHighlight("status: " + status, 20, 80);
 }
 
 void ofApp::sendWsVideo() {
 	string msg = "{\"unique_id\":\"" + uniqueId + "\",\"video\":\"" + ofxCrypto::base64_encode(videoBuffer) + "\",\"timestamp\":\"" + ofToString(timestamp) + "\"}";
-	//client.send(msg);
+    
+    string name = "video";
+
+    socketIO.emit(name, msg);
 }
 
 void ofApp::generateUniqueId() {

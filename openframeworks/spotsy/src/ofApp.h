@@ -19,8 +19,10 @@ class ofApp : public ofBaseApp {
 	
 		void sendWsVideo();
 		void generateUniqueId();
-
+        
+        // SPOUT
 		//ofxSpout::Receiver receiver;
+        // SYPHON
         ofxSyphonClient receiver;
         ofxSyphonServerDirectory receiverDir;
         void serverAnnounced(ofxSyphonServerDirectoryEventArgs &arg);
@@ -29,8 +31,8 @@ class ofApp : public ofBaseApp {
         bool isConnected;
         void onConnection();
         void bindEvents();
-        string address;
-        string status;
+        string host;
+        string status = "...";
         void gotEvent(std::string& name);
         ofEvent<ofxSocketIOData&> serverEvent;
         void onServerEvent(ofxSocketIOData& data);
@@ -42,10 +44,8 @@ class ofApp : public ofBaseApp {
         void onArrayEvent(ofxSocketIOData& data);
     
         ofTexture texture;
-		int width = 640;
-		int height = 480;
-		int videoQuality; // 5 best to 1 worst, default 3 medium
-		string uniqueId = "test";
+		int width, height, fps, videoQuality;
+		string uniqueId = "spotsy";
 		ofFile file;
 		ofxXmlSettings settings;
 		ofBuffer videoBuffer;
