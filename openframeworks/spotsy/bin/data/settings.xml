@@ -3,9 +3,9 @@
     <width>640</width>
     <height>480</height>
     <video_quality>3</video_quality>
-    <host>echo.websocket.org</host>
+    <host>verticalstudio.glitch.me</host>
     <port>80</port>
-    <ssl>0</ssl>
+    <ssl>1</ssl>
     <channel>/</channel>
     <protocol>NULL</protocol>
     <version>-1</version>

@@ -16,7 +16,7 @@ void ofApp::setup() {
 
 	clientOptions.host = settings.getValue("settings:host", "echo.websocket.org");
 	clientOptions.port = settings.getValue("settings:port", 80);
-	clientOptions.bUseSSL = (bool) settings.getValue("settings:bUseSSL", 0);
+	clientOptions.bUseSSL = (bool) settings.getValue("settings:ssl", 0);
 	clientOptions.channel = settings.getValue("settings:channel", "/");
 	clientOptions.protocol = settings.getValue("settings:protocol", "NULL");
 	clientOptions.version = settings.getValue("settings:version", -1); // -1 to use latest
