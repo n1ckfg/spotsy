@@ -6,11 +6,16 @@ void ofApp::setup() {
     height = settings.getValue("settings:height", 480);
     fps = settings.getValue("settings:frame_rate", 60);
 	videoQuality = settings.getValue("settings:video_quality", 3);
+    cropX1 = settings.getValue("settings:crop_x1", 0);
+    cropY1 = settings.getValue("settings:crop_y1", 0);
+    cropX2 = settings.getValue("settings:crop_x2", width);
+    cropY2 = settings.getValue("settings:crop_y2", height);
 
 	ofSetWindowShape(width, height);
     ofSetFrameRate(fps);
 	generateUniqueId();
-	fbo.allocate(width, height, GL_RGBA);
+    fbo1.allocate(abs(cropX2 - cropX1), abs(cropY2 - cropY1), GL_RGBA);
+    fbo2.allocate(width, height, GL_RGBA);
 	pixels.allocate(width, height, OF_IMAGE_COLOR);
     
     // SPOUT
@@ -51,15 +56,20 @@ void ofApp::update() {
     //if (texture.isAllocated()) {
     // SYPHON
     if (receiverDir.isValidIndex(0)) {
-		fbo.begin();
+		fbo1.begin();
         
         // SPOUT
-        //texture.draw(0, 0, width, height);
+        //texture.draw(-cropX1, -cropY1);
         // SYPHON
-        receiver.draw(0, 0, width, height);
+        receiver.draw(-cropX1, -cropY1);
         
-        fbo.end();
-		fbo.readToPixels(pixels);
+        fbo1.end();
+        
+        fbo2.begin();
+        fbo1.draw(0, 0, fbo2.getWidth(), fbo2.getHeight());
+        fbo2.end();
+        
+		fbo2.readToPixels(pixels);
 
 		switch (videoQuality) {
 		case 5:
@@ -84,7 +94,7 @@ void ofApp::update() {
 }
 
 void ofApp::draw() {
-	fbo.draw(0, 0);
+	fbo2.draw(0, 0);
     
     // SPOUT
     //ofDrawBitmapStringHighlight("Spout: " + receiver.getChannelName(), 20, 20);

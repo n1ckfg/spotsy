@@ -45,12 +45,13 @@ class ofApp : public ofBaseApp {
     
         ofTexture texture;
 		int width, height, fps, videoQuality;
+        int cropX1, cropY1, cropX2, cropY2;
 		string uniqueId = "spotsy";
 		ofFile file;
 		ofxXmlSettings settings;
 		ofBuffer videoBuffer;
 		int timestamp;
-		ofFbo fbo;
+		ofFbo fbo1, fbo2;
 		ofPixels pixels;
 	
 
