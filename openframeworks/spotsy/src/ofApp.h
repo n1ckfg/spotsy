@@ -3,7 +3,8 @@
 #include "ofMain.h"
 #include "ofxXmlPoco.h"
 #include "ofxXmlSettings.h"
-#include "ofxSpout.h"
+//#include "ofxSpout.h"
+#include "ofxSyphon.h"
 #include "ofxCrypto.h"
 #include "ofxLibwebsockets.h"
 
@@ -25,8 +26,12 @@ class ofApp : public ofBaseApp {
 		void sendWsVideo();
 		void generateUniqueId();
 
-		ofxSpout::Receiver receiver;
-		ofxLibwebsockets::Client client;
+		//ofxSpout::Receiver receiver;
+        ofxSyphonClient receiver;
+        ofxSyphonServerDirectory receiverDir;
+        void serverAnnounced(ofxSyphonServerDirectoryEventArgs &arg);
+
+        ofxLibwebsockets::Client client;
 		ofxLibwebsockets::ClientOptions clientOptions;
 
 		ofTexture texture;

@@ -1,5 +1,5 @@
 ofxCrypto
 ofxLibwebsockets
 ofxPoco
-ofxSpout
+ofxSyphon
 ofxXmlSettings

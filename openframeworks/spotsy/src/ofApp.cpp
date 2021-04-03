@@ -11,7 +11,11 @@ void ofApp::setup() {
 	fbo.allocate(width, height, GL_RGBA);
 	pixels.allocate(width, height, OF_IMAGE_COLOR);
 
-	receiver.init();
+	//receiver.init();
+    receiver.setup();
+    receiverDir.setup();
+    ofAddListener(receiverDir.events.serverAnnounced, this, &ofApp::serverAnnounced);
+
 	clientOptions = ofxLibwebsockets::defaultClientOptions();
 
 	clientOptions.host = settings.getValue("settings:host", "echo.websocket.org");
@@ -33,14 +37,24 @@ void ofApp::setup() {
 	client.addListener(this);
 }
 
+void ofApp::serverAnnounced(ofxSyphonServerDirectoryEventArgs &arg) {
+    for(auto& dir : arg.servers) {
+        ofLogNotice("ofxSyphonServerDirectory Server Announced")<<" Server Name: "<<dir.serverName <<" | App Name: "<<dir.appName;
+    }
+    receiver.set(arg.servers[0].serverName, arg.servers[0].appName);
+}
+
+
 void ofApp::update() {
 	timestamp = (int) ofGetSystemTimeMillis();
-	receiver.receive(texture);
-
-	if (texture.isAllocated()) {
+	
+    //receiver.receive(texture);
+	
+    //if (texture.isAllocated()) {
+    if (receiverDir.isValidIndex(0)) {
 		fbo.begin();
-		texture.draw(0, 0, width, height);
-		fbo.end();
+		receiver.draw(0, 0, width, height);
+        fbo.end();
 		fbo.readToPixels(pixels);
 
 		switch (videoQuality) {
@@ -67,8 +81,9 @@ void ofApp::update() {
 
 void ofApp::draw() {
 	fbo.draw(0, 0);
-	ofDrawBitmapString("Spout: " + receiver.getChannelName(), 20, 20);
-	ofDrawBitmapString(client.isConnected() ? "ws client connected" : "ws client disconnected :(", 10, 50);
+    //ofDrawBitmapString("Spout: " + receiver.getChannelName(), 20, 20);
+    ofDrawBitmapString("Syphon: " + receiver.getServerName(), 20, 20);
+	ofDrawBitmapString(client.isConnected() ? "ws client connected :)" : "ws client disconnected :(", 10, 50);
 }
 
 void ofApp::sendWsVideo() {
