@@ -53,6 +53,7 @@ class ofApp : public ofBaseApp {
 		int timestamp;
 		ofFbo fbo1, fbo2;
 		ofPixels pixels;
+        int brightness;
 	
 
 

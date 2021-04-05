@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <settings>
     <host>https://verticalstudio.glitch.me:80</host>
-    <width>512</width>
-    <height>512</height>
+    <width>256</width>
+    <height>256</height>
     <frame_rate>30</frame_rate>
-    <video_quality>3</video_quality>
-    <crop_x1>200</crop_x1>
-    <crop_y1>200</crop_y1>
-    <crop_x2>400</crop_x2>
-    <crop_y2>400</crop_y2>
+    <video_quality>1</video_quality>
+    <crop_x1>80</crop_x1>
+    <crop_y1>120</crop_y1>
+    <crop_x2>800</crop_x2>
+    <crop_y2>800</crop_y2>
 </settings>
