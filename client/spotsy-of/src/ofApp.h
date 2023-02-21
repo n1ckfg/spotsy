@@ -3,7 +3,11 @@
 #include "ofMain.h"
 #include "ofxXmlPoco.h"
 #include "ofxXmlSettings.h"
-#include "ofxSpout.h"
+#if defined(_WIN32)
+	#include "ofxSpout.h"
+#elif defined(__APPLE__)
+	//
+#endif
 #include "ofxCrypto.h"
 #include "ofxLibwebsockets.h"
 
