@@ -3,7 +3,7 @@
     <width>640</width>
     <height>480</height>
     <video_quality>3</video_quality>
-    <host>verticalstudio.glitch.me</host>
+    <host>spotsy-server.glitch.me</host>
     <port>443</port>
     <ssl>1</ssl>
     <channel>/</channel>
