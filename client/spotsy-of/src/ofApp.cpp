@@ -11,7 +11,14 @@ void ofApp::setup() {
 	fbo.allocate(width, height, GL_RGBA);
 	pixels.allocate(width, height, OF_IMAGE_COLOR);
 
+#if defined(_WIN32)
 	receiver.init();
+#elif defined(__APPLE__)
+	receiver.setup();
+	receiverDir.setup();
+	ofAddListener(receiverDir.events.serverAnnounced, this, &ofApp::serverAnnounced);
+#endif
+
 	clientOptions = ofxLibwebsockets::defaultClientOptions();
 
 	clientOptions.host = settings.getValue("settings:host", "echo.websocket.org");
@@ -33,11 +40,27 @@ void ofApp::setup() {
 	client.addListener(this);
 }
 
+#if defined(__APPLE__)
+void ofApp::serverAnnounced(ofxSyphonServerDirectoryEventArgs &arg) {
+	for (auto& dir : arg.servers) {
+		ofLogNotice("ofxSyphonServerDirectory Server Announced") << " Server Name: " << dir.serverName << " | App Name: " << dir.appName;
+	}
+	receiver.set(arg.servers[0].serverName, arg.servers[0].appName);
+}
+#endif
+
 void ofApp::update() {
 	timestamp = (int) ofGetSystemTimeMillis();
-	receiver.receive(texture);
 
+#if defined(_WIN32)
+	receiver.receive(texture);
+#endif
+
+#if defined(_WIN32)
 	if (texture.isAllocated()) {
+#elif defined(__APPLE__)
+	if (receiverDir.isValidIndex(0)) {
+#endif
 		fbo.begin();
 		texture.draw(0, 0, width, height);
 		fbo.end();
@@ -67,7 +90,12 @@ void ofApp::update() {
 
 void ofApp::draw() {
 	fbo.draw(0, 0);
+#if defined(_WIN32)
 	ofDrawBitmapString("Spout: " + receiver.getChannelName(), 20, 20);
+#elif defined(__APPLE__)
+	ofDrawBitmapString("Syphon: " + receiver.getServerName(), 20, 20);
+#endif
+
 	ofDrawBitmapString(client.isConnected() ? "ws client connected" : "ws client disconnected :(", 10, 50);
 }
 

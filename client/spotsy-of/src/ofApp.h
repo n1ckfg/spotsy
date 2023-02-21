@@ -4,9 +4,9 @@
 #include "ofxXmlPoco.h"
 #include "ofxXmlSettings.h"
 #if defined(_WIN32)
-	#include "ofxSpout.h"
+#include "ofxSpout.h"
 #elif defined(__APPLE__)
-	//
+#include "ofxSyphon.h"
 #endif
 #include "ofxCrypto.h"
 #include "ofxLibwebsockets.h"
@@ -29,7 +29,14 @@ class ofApp : public ofBaseApp {
 		void sendWsVideo();
 		void generateUniqueId();
 
+#if defined(_WIN32)
 		ofxSpout::Receiver receiver;
+#elif defined(__APPLE__)
+		ofxSyphonClient receiver;
+		ofxSyphonServerDirectory receiverDir;
+		void serverAnnounced(ofxSyphonServerDirectoryEventArgs &arg);
+#endif
+
 		ofxLibwebsockets::Client client;
 		ofxLibwebsockets::ClientOptions clientOptions;
 
@@ -45,6 +52,4 @@ class ofApp : public ofBaseApp {
 		ofFbo fbo;
 		ofPixels pixels;
 	
-
-
 };
