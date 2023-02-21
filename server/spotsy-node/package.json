@@ -1,0 +1,30 @@
+{
+  "name": "game-server",
+  "version": "0.0.1",
+  "description": "Game Server",
+  "author": {
+    "name": "Nick Fox-Gieg",
+    "email": "nick@fox-gieg.com",
+    "url": "https://fox-gieg.com"
+  },
+  "homepage": "https://fox-gieg.com",
+  "engines": {
+    "node": "12.x",
+    "npm": ">= 1.0.0"
+  },
+  "dependencies": {
+    "body-parser": "^1.17.1",
+    "express": "^4.17.1",
+    "socket.io": "2.4.1",
+    "cors": "^2.8.x"
+  },
+  "devDependencies": {
+    "dotenv": "^4.0.0"
+  },
+  "bundleDependencies": [],
+  "private": true,
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  }
+}
